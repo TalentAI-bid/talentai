@@ -16,16 +16,16 @@ import {
   Divider,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-
-// API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5000';
-
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import LaunchIcon from '@mui/icons-material/Launch';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import hashConnectService, { WalletInfo, ConnectionStatus, TransactionResult } from '@/services/hashConnectService';
+
+// API Configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5000';
 
 // Styled Components
 const WalletCard = styled(Card)(({ theme }) => ({

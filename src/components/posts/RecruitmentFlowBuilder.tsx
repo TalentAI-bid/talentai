@@ -493,6 +493,11 @@ const RecruitmentFlowBuilder: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [matchingConfig, setMatchingConfig] = useState<any>(null);
 
+  // Chat/Prompt state
+  const [currentPrompt, setCurrentPrompt] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+
   // Refs
   const postDetailsRef = useRef<PostDetailsRef>(null);
   const manualJobDetailsRef = useRef<ManualJobDetailsRef>(null);
