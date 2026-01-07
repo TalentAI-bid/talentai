@@ -20,7 +20,7 @@ const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
 exports.generateSoftSkillQuestions = async (req, res) => {
   try {
     // 1. Validate request body
-    const { skill, subSkills } = req.body;
+    const { skill, subSkills, customInstructions } = req.body;
 
     if (!skill) {
       return res.status(400).json({
@@ -28,6 +28,7 @@ exports.generateSoftSkillQuestions = async (req, res) => {
         required: {
           skill: "Main soft skill (e.g., 'Communication', 'Leadership')",
           subSkills: "Sub-skill description (optional)",
+          customInstructions: "Additional instructions for AI (optional)",
         },
       });
     }
@@ -58,7 +59,7 @@ exports.generateSoftSkillQuestions = async (req, res) => {
     }
 
     // 3. Prompt: ask for exactly 10 behavioral questions as a JSON array
-    const prompt = `
+    const basePrompt = `
 You are an experienced HR interviewer specializing in assessing soft skills.
 Generate **exactly 10** behavioral interview questions to evaluate "${skillDescription}".
 The questions should:
@@ -68,7 +69,13 @@ The questions should:
       subSkills ? " particularly in " + subSkills : ""
     }
 - Include questions about handling challenges and success stories
-- Be specific and actionable
+- Be specific and actionable`;
+
+    const additionalInstructions = customInstructions && typeof customInstructions === "string" && customInstructions.trim() !== ""
+      ? `\n\n**Additional Requirements:**\n${customInstructions.trim()}`
+      : '';
+
+    const prompt = `${basePrompt}${additionalInstructions}
 
 **Return ONLY** a JSON array of strings—no commentary, no numbering, no markdown—like this:
 

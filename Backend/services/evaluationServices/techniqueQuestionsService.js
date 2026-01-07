@@ -14,10 +14,10 @@ function getTogetherClient() {
 
 /**
  * Génère des questions techniques en appelant Together AI.
- * Inputs: { skill, experienceLevel, proficiencyLevel, userId }
+ * Inputs: { skill, experienceLevel, proficiencyLevel, userId, customInstructions }
  * Returns: { skill, mode, experienceLevel, proficiencyLevel, questions, totalQuestions }
  */
-async function generateTechniqueQuestions({ skill, experienceLevel, proficiencyLevel, userId }) {
+async function generateTechniqueQuestions({ skill, experienceLevel, proficiencyLevel, userId, customInstructions }) {
   if (!skill) throw { status: 400, message: "Missing 'skill' field" };
 
   const profile = await Profile.findOne({ userId });
@@ -33,9 +33,9 @@ async function generateTechniqueQuestions({ skill, experienceLevel, proficiencyL
       throw { status: 400, message: "Proficiency level must be between 1 and 5" };
     }
 
-    prompt = targetedPrompt(skill, experienceLevel, proficiencyLevel);
+    prompt = targetedPrompt(skill, experienceLevel, proficiencyLevel, customInstructions);
   } else {
-    prompt = mixedPrompt(skill);
+    prompt = mixedPrompt(skill, customInstructions);
   }
 
   const together = getTogetherClient();

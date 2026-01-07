@@ -26,9 +26,49 @@ exports.initializeProgress = async (req, res) => {
 
     if (progress) {
       console.log(`✅ Progress already exists, returning current state`);
+
+      // Populate current step and build interview params (matching getProgress response structure)
+      await progress.populate('currentStep');
+      const currentStep = progress.currentStep;
+
+      const Post = require('../../models/postModel');
+      const post = await Post.findById(jobId).select('title companyName');
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: 'Job not found'
+        });
+      }
+
+      const pipelineConfigBuilder = require('../../services/InterviewServices/pipelineInterviewConfigBuilder');
+      const interviewParams = pipelineConfigBuilder.buildParamsFromNode(currentStep, {
+        companyName: post.companyName,
+        title: post.title
+      });
+
+      // Calculate completion stats
+      const completedSteps = progress.steps.filter(s => s.status === 'done').length;
+      const totalSteps = progress.steps.length;
+      const completionPercentage = Math.round((completedSteps / totalSteps) * 100);
+
       return res.status(200).json({
         success: true,
-        data: progress,
+        currentStep: {
+          stepId: currentStep._id,
+          stepNumber: currentStep.data.config.nodeNumber,
+          stepType: currentStep.data.type,
+          stepTitle: currentStep.data.label,
+          interviewParams: interviewParams,
+          passThreshold: currentStep.data.config.passThreshold || 70
+        },
+        progress: progress,
+        stats: {
+          completedSteps,
+          totalSteps,
+          completionPercentage,
+          currentStepNumber: currentStep.data.config.nodeNumber
+        },
         isNew: false
       });
     }
@@ -69,12 +109,49 @@ exports.initializeProgress = async (req, res) => {
 
     await progress.save();
 
+    // Build interview parameters for the first step (matching getProgress response structure)
+    const Post = require('../../models/postModel');
+    const post = await Post.findById(jobId).select('title companyName');
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found'
+      });
+    }
+
+    const pipelineConfigBuilder = require('../../services/InterviewServices/pipelineInterviewConfigBuilder');
+    const interviewParams = pipelineConfigBuilder.buildParamsFromNode(firstInterviewStep, {
+      companyName: post.companyName,
+      title: post.title
+    });
+
+    // Calculate completion stats
+    const completedSteps = progress.steps.filter(s => s.status === 'done').length;
+    const totalSteps = progress.steps.length;
+    const completionPercentage = Math.round((completedSteps / totalSteps) * 100);
+
     console.log(`✅ Progress initialized, starting at step ${firstInterviewStep.data.config.nodeNumber}`);
+
+    // Return response structure matching getProgress for consistency
     return res.status(201).json({
       success: true,
-      data: progress,
-      isNew: true,
-      currentStepNumber: firstInterviewStep.data.config.nodeNumber
+      currentStep: {
+        stepId: firstInterviewStep._id,
+        stepNumber: firstInterviewStep.data.config.nodeNumber,
+        stepType: firstInterviewStep.data.type,
+        stepTitle: firstInterviewStep.data.label,
+        interviewParams: interviewParams,
+        passThreshold: firstInterviewStep.data.config.passThreshold || 70
+      },
+      progress: progress,
+      stats: {
+        completedSteps,
+        totalSteps,
+        completionPercentage,
+        currentStepNumber: firstInterviewStep.data.config.nodeNumber
+      },
+      isNew: true
     });
 
   } catch (error) {

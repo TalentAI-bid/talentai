@@ -27,6 +27,7 @@ const configSchema = new mongoose.Schema(
     }],
     assessmentLevel: String,
     passThreshold: Number,
+    customInstructions: String,
 
     // Soft Skills Configuration
     softSkills: [String],

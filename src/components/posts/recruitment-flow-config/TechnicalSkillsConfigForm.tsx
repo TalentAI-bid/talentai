@@ -43,6 +43,7 @@ interface TechnicalSkillsConfig {
   skills: SkillLevel[];
   assessmentLevel: string;
   passThreshold: number;
+  customInstructions?: string;
   configured: boolean;
 }
 
@@ -68,6 +69,9 @@ const TechnicalSkillsConfigForm: React.FC<TechnicalSkillsConfigFormProps> = ({
   );
   const [passThreshold, setPassThreshold] = useState<number>(
     initialConfig?.passThreshold || 70
+  );
+  const [customInstructions, setCustomInstructions] = useState<string>(
+    initialConfig?.customInstructions || ''
   );
 
   // Filter skills based on selected categories
@@ -124,6 +128,7 @@ const TechnicalSkillsConfigForm: React.FC<TechnicalSkillsConfigFormProps> = ({
       skills: selectedSkills,
       assessmentLevel,
       passThreshold,
+      customInstructions: customInstructions.trim() || undefined,
       configured: selectedCategories.length > 0 && selectedSkills.length > 0,
     };
     onSave(config);
@@ -319,6 +324,27 @@ const TechnicalSkillsConfigForm: React.FC<TechnicalSkillsConfigFormProps> = ({
         </FormControl>
       )}
 
+      {/* Custom Instructions */}
+      {selectedSkills.length > 0 && (
+        <FormControl fullWidth>
+          <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
+            Additional Instructions for AI Agent (Optional)
+          </Typography>
+          <TextField
+            multiline
+            rows={4}
+            value={customInstructions}
+            onChange={(e) => setCustomInstructions(e.target.value)}
+            placeholder="e.g., The candidate needs to know about specific Laravel best practices for our enterprise applications, including repository pattern and service layer architecture..."
+            variant="outlined"
+            fullWidth
+          />
+          <Typography variant="caption" color="textSecondary" sx={{ mt: 0.5 }}>
+            Provide specific requirements or focus areas for the AI to consider when generating questions
+          </Typography>
+        </FormControl>
+      )}
+
       {/* Configuration Summary */}
       {selectedSkills.length > 0 && (
         <Box
@@ -369,6 +395,17 @@ const TechnicalSkillsConfigForm: React.FC<TechnicalSkillsConfigFormProps> = ({
                 sx={{ mt: 0.5 }}
               />
             </Box>
+
+            {customInstructions && (
+              <Box>
+                <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>
+                  Custom Instructions:
+                </Typography>
+                <Typography variant="caption" sx={{ mt: 0.5, display: 'block', fontStyle: 'italic' }}>
+                  "{customInstructions.substring(0, 100)}{customInstructions.length > 100 ? '...' : ''}"
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       )}

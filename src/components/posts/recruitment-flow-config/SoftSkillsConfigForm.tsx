@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
   Slider,
+  TextField,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { softSkills } from '@/constants/skills';
@@ -23,6 +24,7 @@ interface SoftSkillsConfig {
   subcategories: string[];
   assessmentLevel: string;
   passThreshold: number;
+  customInstructions?: string;
   configured: boolean;
 }
 
@@ -48,6 +50,9 @@ const SoftSkillsConfigForm: React.FC<SoftSkillsConfigFormProps> = ({
   );
   const [passThreshold, setPassThreshold] = useState<number>(
     initialConfig?.passThreshold || 70
+  );
+  const [customInstructions, setCustomInstructions] = useState<string>(
+    initialConfig?.customInstructions || ''
   );
 
   const handleSoftSkillToggle = (skillName: string, hasSubcategories: boolean) => {
@@ -87,6 +92,7 @@ const SoftSkillsConfigForm: React.FC<SoftSkillsConfigFormProps> = ({
       subcategories: selectedSubcategories,
       assessmentLevel,
       passThreshold,
+      customInstructions: customInstructions.trim() || undefined,
       configured: selectedSoftSkills.length > 0,
     };
     onSave(config);
@@ -245,6 +251,27 @@ const SoftSkillsConfigForm: React.FC<SoftSkillsConfigFormProps> = ({
         </FormControl>
       )}
 
+      {/* Custom Instructions */}
+      {selectedSoftSkills.length > 0 && (
+        <FormControl fullWidth>
+          <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
+            Additional Instructions for AI Agent (Optional)
+          </Typography>
+          <TextField
+            multiline
+            rows={4}
+            value={customInstructions}
+            onChange={(e) => setCustomInstructions(e.target.value)}
+            placeholder="e.g., Focus on scenarios involving cross-functional team collaboration and remote work environments..."
+            variant="outlined"
+            fullWidth
+          />
+          <Typography variant="caption" color="textSecondary" sx={{ mt: 0.5 }}>
+            Provide specific requirements or focus areas for the AI to consider when generating questions
+          </Typography>
+        </FormControl>
+      )}
+
       {/* Configuration Summary */}
       {selectedSoftSkills.length > 0 && (
         <Box
@@ -314,6 +341,17 @@ const SoftSkillsConfigForm: React.FC<SoftSkillsConfigFormProps> = ({
                 sx={{ mt: 0.5 }}
               />
             </Box>
+
+            {customInstructions && (
+              <Box>
+                <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>
+                  Custom Instructions:
+                </Typography>
+                <Typography variant="caption" sx={{ mt: 0.5, display: 'block', fontStyle: 'italic' }}>
+                  "{customInstructions.substring(0, 100)}{customInstructions.length > 100 ? '...' : ''}"
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       )}

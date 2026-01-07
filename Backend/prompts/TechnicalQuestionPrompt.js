@@ -1,8 +1,8 @@
 // Prompts pour la génération de questions techniques
 // Exporte deux prompts : targetedPrompt et mixedPrompt
 
-function targetedPrompt(skill, experienceLevel, proficiencyLevel) {
-  return `
+function targetedPrompt(skill, experienceLevel, proficiencyLevel, customInstructions = '') {
+  const basePrompt = `
 You are an experienced technical interviewer specialized in ${skill}.
 You are generating questions for a **technical test** designed to evaluate candidates with ${experienceLevel} and proficiency level ${proficiencyLevel}/5.
 
@@ -15,7 +15,13 @@ Generate **exactly 10** technical questions as follows:
   - Assess applied knowledge and reasoning, not just theory
 
 **Important: All questions must be answered orally. Do NOT ask for any live coding, code writing, or writing of syntax.**
-Questions should simulate challenges candidates would face on the job.
+Questions should simulate challenges candidates would face on the job.`;
+
+  const additionalInstructions = customInstructions
+    ? `\n\n**Additional Requirements:**\n${customInstructions}`
+    : '';
+
+  return `${basePrompt}${additionalInstructions}
 
 Return ONLY a JSON array of strings, like:
 [
@@ -25,8 +31,8 @@ Return ONLY a JSON array of strings, like:
 `.trim();
 }
 
-function mixedPrompt(skill) {
-  return `
+function mixedPrompt(skill, customInstructions = '') {
+  const basePrompt = `
 You are a professional interviewer for the skill ${skill}.
 Generate **exactly 10** interview questions for a **technical test**, covering difficulty levels 1 to 5:
 - 2 questions at level 1 (simple real-world context)
@@ -39,7 +45,13 @@ All questions must be:
 - Situational and scenario-based
 - Focused on applied knowledge, reasoning, and decision-making
 - Representative of challenges candidates would encounter in real projects
-- **Answerable orally only, with no live coding, no code writing, and no syntax recall**
+- **Answerable orally only, with no live coding, no code writing, and no syntax recall**`;
+
+  const additionalInstructions = customInstructions
+    ? `\n\n**Additional Requirements:**\n${customInstructions}`
+    : '';
+
+  return `${basePrompt}${additionalInstructions}
 
 Return ONLY a JSON array of strings, like:
 [
