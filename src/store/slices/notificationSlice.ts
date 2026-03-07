@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
+const NOTIFICATION_API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
 interface Notification {
   id: string;
   type: 'success' | 'info' | 'warning' | 'error';
@@ -66,7 +68,7 @@ export const fetchNotifications = createAsyncThunk(
   'notifications/fetch',
   async (_, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const token = localStorage.getItem('api_token');
 
       console.log('🔍 Fetching notifications from:', `${apiUrl}/notification-system/GetMyNotification`);
@@ -169,7 +171,7 @@ export const markNotificationAsRead = createAsyncThunk(
   'notifications/markAsRead',
   async (id: string, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const response = await fetch(`${apiUrl}/notification-system/markAsRead/${id}/read`, {
         method: 'PATCH',
         headers: getApiHeaders(),
@@ -190,7 +192,7 @@ export const markAllNotificationsAsRead = createAsyncThunk(
   'notifications/markAllAsRead',
   async (_, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const response = await fetch(`${apiUrl}/notification-system/mark-all-read`, {
         method: 'PATCH',
         headers: getApiHeaders(),
@@ -212,7 +214,7 @@ export const createNotification = createAsyncThunk(
   'notifications/create',
   async ({ type, content }: { type: 'info' | 'success' | 'warning' | 'error' | 'custom'; content: string }, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const response = await fetch(`${apiUrl}/notification-system/AddNotification/${type}`, {
         method: 'POST',
         headers: getApiHeaders(),
@@ -236,7 +238,7 @@ export const broadcastSystemNotification = createAsyncThunk(
   'notifications/broadcast',
   async ({ content, recipientIds }: { content: string; recipientIds: string[] }, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const token = localStorage.getItem('api_token');
 
       if (!token) {
@@ -277,7 +279,7 @@ export const archiveNotification = createAsyncThunk(
   'notifications/archive',
   async (id: string, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const response = await fetch(`${apiUrl}/notification-system/archiveNotification/${id}`, {
         method: 'PATCH',
         headers: getApiHeaders(),
@@ -299,7 +301,7 @@ export const archiveAllNotifications = createAsyncThunk(
   'notifications/archiveAll',
   async (_, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
       const response = await fetch(`${apiUrl}/notification-system/archive-all`, {
         method: 'PATCH',
         headers: getApiHeaders(),
@@ -323,7 +325,7 @@ export const fetchArchivedNotifications = createAsyncThunk(
   'notifications/fetchArchived',
   async (_, { rejectWithValue }) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = NOTIFICATION_API_URL;
 
       console.log('🗄️ Fetching archived notifications from:', `${apiUrl}/notification-system/GetMyNotification`);
 
