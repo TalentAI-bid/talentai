@@ -70,6 +70,7 @@ const IntelligentInterviewTest = () => {
   // Interview config (URL params + pipeline)
   const {
     interviewConfig,
+    setInterviewConfig,
     isPipelineJob,
     candidateProgress,
     currentPipelineStep,
@@ -88,6 +89,14 @@ const IntelligentInterviewTest = () => {
     timer.startTimer(data.config.duration || 20);
     timer.setDuration(data.config.duration * 60 * 1000);
 
+    // Update config with real company name from backend
+    if (data.targetCompany) {
+      setInterviewConfig(prev => ({
+        ...prev,
+        context: { ...prev.context, targetCompany: data.targetCompany }
+      }));
+    }
+
     // Configure backend silence intelligence
     if (data.config.silenceIntelligence) {
       audio.setBackendSilenceConfig(data.config.silenceIntelligence);
@@ -100,7 +109,7 @@ const IntelligentInterviewTest = () => {
         maxPrompts: data.config.silenceIntelligence.maxPrompts
       });
     }
-  }, []);
+  }, [setInterviewConfig]);
 
   const handleInterviewMessage = useCallback((message: InterviewMessage) => {
     audio.setConversationHistory(prev => [...prev, message]);
