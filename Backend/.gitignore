@@ -103,3 +103,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.* 
+# User-uploaded content / personal data — this repo is PUBLIC, never commit these
+uploads/
+public/images/Users/
